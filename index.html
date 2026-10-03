@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Thiệp gửi Hải Yến 💗</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: linear-gradient(145deg, #fff0f6, #ffdce9 45%, #f9c9df);
+        color: #6b3b52;
+      }
+      button {
+        font: inherit;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+      .screen {
+        position: absolute;
+        inset: 0;
+        padding: 28px 20px 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transform: scale(1.03);
+        transition:
+          opacity 0.7s ease,
+          transform 0.7s ease,
+          visibility 0.7s;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .screen.active {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+      }
+      .content {
+        width: min(100%, 620px);
+        text-align: center;
+        position: relative;
+        z-index: 5;
+      }
+      h1,
+      h2 {
+        margin: 0 0 14px;
+        color: #b34f78;
+        text-shadow: 0 2px 8px #fff;
+      }
+      h1 {
+        font-size: clamp(30px, 8vw, 54px);
+      }
+      h2 {
+        font-size: clamp(25px, 7vw, 40px);
+      }
+      p {
+        font-size: clamp(16px, 4.5vw, 20px);
+        line-height: 1.75;
+        margin: 10px 0;
+      }
+      .card {
+        width: 100%;
+        padding: 25px 22px;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.63);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 15px 45px rgba(157, 69, 111, 0.15);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+      .edit-note {
+        font-size: 13px;
+        color: #a96a83;
+        margin-top: 15px;
+        opacity: 0.85;
+      }
+      .next {
+        margin-top: 22px;
+        border: 0;
+        border-radius: 999px;
+        padding: 13px 27px;
+        color: white;
+        background: linear-gradient(135deg, #d96897, #b74e7a);
+        box-shadow: 0 8px 20px rgba(183, 78, 122, 0.25);
+        cursor: pointer;
+      }
+      .next:active {
+        transform: scale(0.96);
+      }
+      .corner {
+        position: absolute;
+        font-size: 55px;
+        opacity: 0.9;
+        filter: drop-shadow(0 5px 6px #e5a1bd);
+      }
+      .bear {
+        font-size: 100px;
+        animation: bob 2.8s ease-in-out infinite;
+      }
+      .cake {
+        font-size: 75px;
+        animation: bob 3s ease-in-out infinite 0.4s;
+      }
+      @keyframes bob {
+        50% {
+          transform: translateY(-8px) rotate(2deg);
+        }
+      }
+      .small {
+        font-size: 14px !important;
+        color: #a5657d;
+      }
+
+      /* Background particles */
+      #particles,
+      #hearts {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .star {
+        position: absolute;
+        color: #fff;
+        font-size: 10px;
+        animation: twinkle 2.5s infinite ease-in-out;
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.15;
+          transform: scale(0.7);
+        }
+        50% {
+          opacity: 1;
+          transform: scale(1.35);
+        }
+      }
+      .heart {
+        position: absolute;
+        bottom: -50px;
+        color: #ff83ad;
+        font-size: 20px;
+        animation: floatUp linear infinite;
+        filter: drop-shadow(0 2px 4px rgba(180, 70, 110, 0.2));
+      }
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) rotate(0) scale(0.8);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.8;
+        }
+        90% {
+          opacity: 0.8;
+        }
+        100% {
+          transform: translateY(-115vh) rotate(25deg) scale(1.15);
+          opacity: 0;
+        }
+      }
+
+      /* Countdown */
+      #countdown {
+        background: radial-gradient(circle, #fff8fb, #ffdce9);
+      }
+      .count-number {
+        font-size: clamp(90px, 28vw, 180px);
+        font-weight: 800;
+        color: #d35c8b;
+        text-shadow: 0 10px 35px rgba(187, 65, 116, 0.22);
+        animation: pop 0.9s ease both;
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.2);
+          opacity: 0;
+        }
+        65% {
+          transform: scale(1.12);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* Final choices */
+      .choices {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 25px;
+      }
+      .choice {
+        min-width: 125px;
+        padding: 14px 22px;
+        border-radius: 999px;
+        border: 0;
+        cursor: pointer;
+        background: white;
+        color: #b34f78;
+        font-weight: 700;
+        box-shadow: 0 8px 22px rgba(160, 65, 110, 0.15);
+      }
+      .choice.yes {
+        background: linear-gradient(135deg, #e979a4, #bf5680);
+        color: #fff;
+      }
+      #answer {
+        min-height: 30px;
+        margin-top: 18px;
+        font-weight: 700;
+        color: #b34f78;
+      }
+      .footer {
+        margin-top: 16px;
+        font-size: 12px;
+        color: #a86b82;
+      }
+
+      /* Make long text comfortable */
+      .letter {
+        text-align: left;
+        white-space: pre-line;
+        min-height: 190px;
+      }
+      .center {
+        text-align: center;
+      }
+      @media (max-height: 650px) {
+        .screen {
+          padding-top: 15px;
+          padding-bottom: 15px;
+        }
+        .bear {
+          font-size: 70px;
+        }
+        .cake {
+          font-size: 52px;
+        }
+        .card {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="particles"></div>
+      <div id="hearts"></div>
+
+      <!-- MÀN HÌNH 0: MỞ THIỆP -->
+      <section class="screen active" id="cover">
+        <div class="content">
+          <div class="bear">🧸</div>
+          <h1>Tấm thiệp này Công muốn gửi đến Yến 💗</h1>
+          <div class="card">
+            <p> Mở thiệp nào </p>
+            <p class="small"> Nhấn vào bên dưới để bắt đầu nào! ✨</p>
+            <button class="next" onclick="startCard()">Mở thiệp 💌</button>
+          </div>
+          <div class="cake">🍰</div>
+        </div>
+      </section>
+
+      <!-- MÀN HÌNH ĐẾM 3-2-1 -->
+      <section class="screen" id="countdown">
+        <div class="content">
+          <div class="count-number" id="countNumber">3</div>
+          <p>Chuẩn bị nè...✨</p>
+        </div>
+      </section>
+
+      <!-- TRANG 1: CẢM ƠN -->
+      <section class="screen" id="page1">
+        <div class="content">
+          <div class="corner" style="top: 3%; left: 4%">🧸</div>
+          <div class="corner" style="bottom: 4%; right: 4%">🍰</div>
+          <h2>💗Những dòng đầu tiên 💗</h2>
+          <div class="card">
+            <div class="letter">
+              ✏️ Công không nhớ rõ ngày đầu tiên gặp Yến là khi nào, nhưng đó là
+              1 buổi sáng của tháng 3. Hôm đó nắng đẹp lắm(có lẽ là ông trời
+              cũng vui khi Công gặp được Yến) Không phải Công thích Yến ngay từ
+              cái nhìn đầu tiên đâu. Lần đầu gặp Yến, Công không quá ấn tượng gì
+              nhiều đâu.Lúc đó nhìn Yến, Công tưởng Yến nhỏ tuổi hơn Công. Một
+              lúc sau hỏi ra thì bằng tuổi. Rồi Công lại thắc mắc: Sao người ta
+              bằng tuổi mình người ta đi làm sớm vậy nhỉ? Giờ này Công hiểu rồi,
+              Công cảm thấy thương Yến lắm luôn.
+            </div>
+            <button class="next" onclick="showPage(2)">Tiếp tục →</button>
+          </div>
+          <div class="footer">Trang 1 / 4</div>
+        </div>
+      </section>
+
+      <!-- TRANG 2: TRẢI LÒNG -->
+      <section class="screen" id="page2">
+        <div class="content">
+          <div class="corner" style="top: 3%; right: 4%">🌷</div>
+          <div class="corner" style="bottom: 4%; left: 4%">🧸</div>
+          <h2>🌸 Điều Công muốn trải lòng</h2>
+          <div class="card">
+            <div class="letter">
+              ✏️ Sau những lần tiếp xúc và nói chuyện trước kia.
+               Công không nghĩ là Công sẽ thích Yến. Công nghĩ mình mọi thứ bình thường thôi.
+                Công cũng vượt qua nhiều thứ mà Công không muốn kể lại vì Công muốn nó mãi mãi nằm ở quá khứ và không xuất hiện lại 1 lần nào nữa. Thời điểm Công bắt đầu gặp Yến là trong giai đoạn Công tự chữa lành lại bản thân.
+                Và sau tất cả mọi chuyện bây giờ Công đã tìm được thứ mà Công muốn tìm, nhìn thấy những thứ mà Công mơ ước, nhận được những gì mà Công ước mơ. Điều đó chính là Yến, người tớ yêu.
+                 Cảm ơn Yến đã xuất hiện tại thời điểm này, thời điểm Công đang dần hoàn thiện bản thân.
+            <button class="next" onclick="showPage(3)">Tiếp tục →</button>
+          </div>
+          <div class="footer">Trang 2 / 4</div>
+        </div>
+      </section>
+
+      <!-- TRANG 3: TỎ TÌNH -->
+      <section class="screen" id="page3">
+        <div class="content">
+          <div class="corner" style="top: 3%; left: 4%">💝</div>
+          <div class="corner" style="bottom: 4%; right: 4%">🎂</div>
+          <h2>💞 Những lời từ tận đáy lòng </h2>
+          <div class="card">
+            <div class="letter">
+              Từ khi ngày hôm đó, này 22/8(Công vẫn còn nhớ đó nha). Tối hôm đó Công chính thức nói câu:"Công thích Yến và muốn tìm hiểu Yến!" 
+               Công không hy vọng gì nhiều, nhưng Công rất vui khi Yến nói:"Ủa tui chấp nhận kết bạn Facebook rồi còn gì nữa" lúc đó Công mới hiểu được:" à thì ra người ta chấp nhận cho mình tìm hiểu rồi mà mình ngu nên hông biết hì hì".
+               Sau một thời gian tìm hiểu Công cũng đã biết 1 vài điều về Yến: Yến thích đồ ngọt nè, Yến thích vòng ngọc thạch nè, Yến cười dễ thường lắm lắm luôn, Yến thích Doll nè, thích Gấu bông, còn nhiều thứ nữa để Công tìm hiểu thêm nhá.
+               Và Công thích ở Yến thích những lúc được nói chuyện với Yến,
+               Thích được nhìn thấy Yến, thích những lúc Công với Yến cùng đi chơi, thích nhìn Yến lúc Yến làm việc,...
+          Công không dám chắc rằng có thể lo cho Yến tất cả nhưng Công chắc chắn có thể cho Yến những gì Công có và yêu thương Yến thật chân thành không giả dối,
+          Và cuối cùng Công muốn nói là:...
+            </div>
+            <button class="next" onclick="showFinal()">Đọc tiếp →</button>
+          </div>
+          <div class="footer">Trang 3 / 4</div>
+        </div>
+      </section>
+
+      <!-- TRANG CUỐI: CÂU HỎI -->
+      <section class="screen" id="page4">
+        <div class="content">
+          <div class="bear">🧸</div>
+          <h2>💗 Điều quan trọng nhất</h2>
+          <div class="card">
+            <div class="letter center">
+              Yến cho phép Công làm người yêu Yến nha. Được chăm cho cho Yến lúc Yến bệnh, được ở cạnh Yến lúc Yến không vui. Được ở gần Yến thêm 1 chút nữa. 
+            </div>
+            <div class="choices">
+              <!-- ✏️ ĐỔI TÊN 2 ĐÁP ÁN NẾU MUỐN -->
+              <button class="choice yes" onclick="answer('yes')">
+                💗 Đồng ý
+              </button>
+              <button class="choice" onclick="answer('no')">
+                🌷 Cho mình suy nghĩ
+              </button>
+            </div>
+            <div id="answer"></div>
+          </div>
+          <div class="cake">🍰</div>
+          <div class="footer">
+            Hết rồi... nhưng câu chuyện có thể bắt đầu từ đây ✨
+          </div>
+        </div>
+      </section>
+
+      <!--
+    🎵 ÂM NHẠC
+    Đặt 2 file MP3 cùng thư mục với file HTML:
+      - dung-lam-trai-tim-anh-dau.mp3  → dùng cho 3 trang đầu
+      - khong-thoi-gian.mp3            → dùng ở trang cuối
+    Lưu ý: hãy sử dụng file âm thanh mà bạn có quyền sử dụng.
+  -->
+      <audio id="song1" loop preload="auto">
+        <source src="dung-lam-trai-tim-anh-dau.mp3" type="audio/mpeg" />
+      </audio>
+      <audio id="song2" loop preload="auto">
+        <source src="khong-thoi-gian.mp3" type="audio/mpeg" />
+      </audio>
+    </div>
+
+    <script>
+      const screens = [
+        "cover",
+        "countdown",
+        "page1",
+        "page2",
+        "page3",
+        "page4",
+      ];
+      let current = "cover";
+
+      function activate(id) {
+        screens.forEach((x) =>
+          document.getElementById(x).classList.remove("active"),
+        );
+        document.getElementById(id).classList.add("active");
+        current = id;
+      }
+
+      function startCard() {
+        // Trình duyệt điện thoại thường chặn nhạc nếu chưa có thao tác của người dùng.
+        const s1 = document.getElementById("song1");
+        s1.volume = 0.5;
+        s1.play().catch(() => {});
+        activate("countdown");
+
+        let n = 3;
+        const el = document.getElementById("countNumber");
+        const timer = setInterval(() => {
+          n--;
+          if (n > 0) {
+            el.textContent = n;
+            el.style.animation = "none";
+            void el.offsetWidth;
+            el.style.animation = "pop .9s ease both";
+          } else {
+            clearInterval(timer);
+            showPage(1);
+          }
+        }, 1000);
+      }
+
+      function showPage(num) {
+        activate("page" + num);
+        // Bài 1 chạy xuyên suốt trang 1-3.
+        if (num >= 1 && num <= 3) {
+          document.getElementById("song2").pause();
+          document
+            .getElementById("song1")
+            .play()
+            .catch(() => {});
+        }
+      }
+
+      function showFinal() {
+        activate("page4");
+        const s1 = document.getElementById("song1");
+        const s2 = document.getElementById("song2");
+        s1.pause();
+        s1.currentTime = 0;
+        s2.volume = 0.45;
+        s2.play().catch(() => {});
+      }
+
+      function answer(type) {
+        const a = document.getElementById("answer");
+        if (type === "yes") {
+          a.textContent = "💗 Cảm ơn Yến, từ bây giờ chúng ta là người yêu của nhau rồi"
+          burstHearts();
+        } else {
+          a.textContent =
+            "🌷 Không sao cả, Yến suy nghĩ thoải mái nhé"
+        }
+      }
+
+      function burstHearts() {
+        for (let i = 0; i < 18; i++) {
+          const h = document.createElement("div");
+          h.textContent = ["💗", "💕", "💖", "✨"][
+            Math.floor(Math.random() * 4)
+          ];
+          h.style.position = "fixed";
+          h.style.left = 30 + Math.random() * 40 + "%";
+          h.style.top = 45 + Math.random() * 15 + "%";
+          h.style.fontSize = 18 + Math.random() * 18 + "px";
+          h.style.zIndex = 20;
+          h.style.transition = "transform 1.5s ease, opacity 1.5s ease";
+          document.body.appendChild(h);
+          requestAnimationFrame(() => {
+            h.style.transform = `translate(${(Math.random() - 0.5) * 260}px,${-100 - Math.random() * 280}px) rotate(${Math.random() * 100 - 50}deg)`;
+            h.style.opacity = 0;
+          });
+          setTimeout(() => h.remove(), 1600);
+        }
+      }
+
+      /* Sao lấp lánh */
+      const particles = document.getElementById("particles");
+      for (let i = 0; i < 65; i++) {
+        const s = document.createElement("span");
+        s.className = "star";
+        s.textContent = Math.random() > 0.45 ? "✦" : "·";
+        s.style.left = Math.random() * 100 + "%";
+        s.style.top = Math.random() * 100 + "%";
+        s.style.fontSize = 6 + Math.random() * 13 + "px";
+        s.style.animationDelay = Math.random() * 3 + "s";
+        s.style.animationDuration = 1.5 + Math.random() * 2.5 + "s";
+        particles.appendChild(s);
+      }
+
+      /* Tim bay từ dưới lên */
+      const hearts = document.getElementById("hearts");
+      for (let i = 0; i < 22; i++) {
+        const h = document.createElement("span");
+        h.className = "heart";
+        h.textContent = ["♡", "♥", "❤", "💕"][Math.floor(Math.random() * 4)];
+        h.style.left = Math.random() * 100 + "%";
+        h.style.fontSize = 12 + Math.random() * 18 + "px";
+        h.style.animationDuration = 7 + Math.random() * 8 + "s";
+        h.style.animationDelay = -Math.random() * 12 + "s";
+        hearts.appendChild(h);
+      }
+    </script>
+  </body>
+</html>
